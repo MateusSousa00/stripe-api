@@ -27,8 +27,8 @@ app.post("/checkout", async (req, res, next) => {
           }
          ],
          mode: "subscription",
-         success_url: "http://localhost:4242/success.html",
-         cancel_url: "http://localhost:4242/cancel.html",
+         success_url: `${process.env.STRIPE_URL}/success.html`,
+         cancel_url: `${process.env.STRIPE_URL}/cancel.html`,
       });
 
       res.status(200).json(session);
@@ -41,7 +41,7 @@ app.post('/create-portal-session',async (req, res, next) => {
   try {
     const { sessionId } = req.body;
     const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId)
-    const returnUrl = 'http://localhost:4242/';
+    const returnUrl = process.env.STRIPE_URL;
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: checkoutSession.customer as string,
       return_url: returnUrl
@@ -106,4 +106,4 @@ app.post('./webhook', express.raw({ type: 'application/json'}), (req, res) => {
   res.send();
 })
 
-app.listen(4242, () => console.log('app is running on 4242'));
+app.listen(process.env.PORT, () => console.log(`app is running on ${process.env.PORT}`));
